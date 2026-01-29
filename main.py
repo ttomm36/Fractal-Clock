@@ -3,7 +3,7 @@
 # Number of splits
 
 import datetime
-import time
+import numpy as np
 from tkinter import *
 
 
@@ -35,11 +35,41 @@ class Clock(Frame):
         self.clear_all_inside_frame()
         self.create_clock()
 
+
     def create_clock(self):
-        canv = Canvas(self.master)
-        canv.pack()
-        print(datetime.datetime.now().time())
-        pass
+        while True:
+            self.clear_all_inside_frame()
+            canv = Canvas(self.master)
+            canv.pack()
+            time = datetime.datetime.now().time()
+            y_center = np.floor(canv.winfo_reqheight()/2)
+            x_center = np.floor(canv.winfo_reqwidth()/2)
+
+            start_x = x_center
+            start_y = y_center - np.floor(y_center/2)
+
+            # Hour hand
+            angle = np.radians((360 / 12)*time.hour + (360 / 12/600)*time.minute)
+            newx = ((start_x-x_center)*np.cos(angle)-(start_y-y_center)*np.sin(angle)) + x_center
+            newy = ((start_x-x_center)*np.sin(angle)+(start_y-y_center)*np.cos(angle)) + y_center
+            canv.create_line(x_center,y_center,newx,newy, fill= 'black')
+
+            # Minute hand
+            start_y = y_center - np.floor(y_center/3)
+            angle = np.radians((360 / 60)*time.minute)
+            newx = ((start_x-x_center)*np.cos(angle)-(start_y-y_center)*np.sin(angle)) + x_center
+            newy = ((start_x-x_center)*np.sin(angle)+(start_y-y_center)*np.cos(angle)) + y_center
+            canv.create_line(x_center,y_center,newx,newy, fill= 'blue')
+
+            # Minute hand
+            start_y = y_center - np.floor(y_center)
+            angle = np.radians((360 / 60)*time.second)
+            newx = ((start_x-x_center)*np.cos(angle)-(start_y-y_center)*np.sin(angle)) + x_center
+            newy = ((start_x-x_center)*np.sin(angle)+(start_y-y_center)*np.cos(angle)) + y_center
+            canv.create_line(x_center,y_center,newx,newy, fill= 'blue')
+
+
+            self.master.update()
 
     def clear_all_inside_frame(self):
 
